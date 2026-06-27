@@ -1,6 +1,6 @@
 services:
     bot:
-        build: .
+        image: ghcr.io/okiscape/faststicker-tgbot:latest
         restart: unless-stopped
         container_name: faststicker-tgbot
         env_file: .env
