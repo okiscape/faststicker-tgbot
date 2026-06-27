@@ -1,5 +1,5 @@
 services:
-    bot:
+    faststicker-tgbot:
         image: ghcr.io/okiscape/faststicker-tgbot:latest
         restart: unless-stopped
         container_name: faststicker-tgbot

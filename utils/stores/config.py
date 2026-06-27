@@ -1,6 +1,8 @@
-from dotenv import dotenv_values
+import os
 
-_env = dotenv_values()
+from dotenv import load_dotenv
+
+load_dotenv()
 
 import pytz
 from aiogram.client.default import DefaultBotProperties
@@ -14,4 +16,9 @@ logIgnoreTypes = ["preload"]
 
 
 class env:
-    BOT_TOKEN = _env["BOT_TOKEN"]
+    BOT_TOKEN = os.environ.get("BOT_TOKEN")
+
+
+if not env.BOT_TOKEN:
+    print("BOT_TOKEN was not found!!!")
+    exit(1)
