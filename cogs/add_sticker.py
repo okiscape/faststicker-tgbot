@@ -39,7 +39,7 @@ class Handler(cog.Cog):
         pack_name = message.text
         full_pack_name = pack_name + "_by_" + (await self.bot.get_me()).username
         await message.answer(
-            f'Please send me the sticker image you want to add to your <a href="https://t.me/addstickers/{full_pack_name}">pack</a>, along with the emojis in the caption.'
+            f'Please send me the sticker image you want to add to your <a href="https://t.me/addstickers/{full_pack_name}">pack</a>, along with the emojis in the caption.\n(use /copy_emoji to copy emojis from existing stickers!)'
         )
         await state.update_data(packToAdd=pack_name)
         await state.set_state(cog.states.AddStickerState.waitingForSticker)
