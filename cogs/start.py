@@ -17,10 +17,10 @@ Or /new_pack to quickly create a new sticker pack!""")
     async def aboutcommand(self, message: cog.Message):
         await message.answer("""About Fast Sticker Bot!
 
-This bot created for simplier stickerpack creation using: already existing stickers, gifs, and media from your gallery for simple sticker creation.
+This bot created for simplier stickerpack creation using: already existing stickers, gifs, and media from your gallery.
 This bot will convert your media to needed format for telegram to save it in your stickerpack.
 
-<a href="https://github.com/okiscape/faststicker-bot">Sources</a>""")
+<a href="https://github.com/okiscape/faststicker-tgbot">Sources</a>""")
 
     @cog.regMessage(cog.F.text == "/help")
     async def helpcommand(self, message: cog.Message):
