@@ -222,7 +222,7 @@ class Handler(cog.Cog):
             stickers = data.get("stickers", [])
             stickers.append(
                 {
-                    "emojis": emojis,
+                    "emojis": list(emojis),
                     "sticker": sticker_data,
                     "format": sticker_format,
                     "filename": filename,
