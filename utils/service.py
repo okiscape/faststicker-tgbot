@@ -93,7 +93,7 @@ class Bot(aiBot):
     def nowdt(self):
         return self.datetime.now(self.config.defaultTimezone)
 
-    def log(self, *args, type=None):
+    def log(self, *args, type=None, **kwargs):
         """
         Types:
                 debug
@@ -111,6 +111,7 @@ class Bot(aiBot):
                 global
         """
         args = [str(i) for i in list(args)]
+        kwargs = [f"{i}: {str(i)}" for i in kwargs]
         if type:
             argTypes = {
                 "debug": f"{Fore.YELLOW}- DBG{Fore.RESET}",
@@ -130,10 +131,8 @@ class Bot(aiBot):
 
             if type in self.logIgnoreTypes:
                 return
-            try:
-                args.insert(0, argTypes[type.lower()])
-            except:
-                pass
+
+            args.insert(0, argTypes[type.lower()])
         time = self.nowdt().strftime("%H:%M:%S.%f")[:-3]
         datetimeformat = self.nowdt().strftime(f"%d/%m/%Y {time} %Z")
-        print(f"[{datetimeformat}] {(' | '.join(args)[:1000])}")
+        print(f"[{datetimeformat}] {(' | '.join(args + kwargs)[:1000])}")

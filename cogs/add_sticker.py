@@ -48,8 +48,8 @@ class Handler(cog.Cog):
     async def receive_sticker_sticker_emojisa(
         self, message: cog.Message, state: cog.FSMContext
     ):
-        if cog.sh.is_emoji(message.text) == False:
-            await message.answer("Please, send only emojis in the message!")
+        if not cog.sh.is_emoji(message.text):
+            await message.answer("Please, send only unicode emojis in the message!")
             return await state.set_state(
                 cog.states.AddStickerState.stickersAddStickerEmojis
             )
@@ -83,7 +83,7 @@ class Handler(cog.Cog):
         )
 
         await message.answer(
-            f"Sticker added to the pack!\nYou can send me more stickers to add to the pack, or send /done when you are finished."
+            "Sticker added to the pack!\nYou can send me more stickers to add to the pack, or send /done when you are finished."
         )
         await state.set_state(cog.states.AddStickerState.waitingForSticker)
 
@@ -135,7 +135,7 @@ class Handler(cog.Cog):
             fname = (
                 message.document.file_name.lower() if message.document.file_name else ""
             )
-            print(fname, mime)
+            self.bot.log("recieved a document", filename=fname, mime=mime, type="debug")
             if mime == "video/mp4" or fname.endswith(".mp4"):
                 try:
                     sticker_data = convert_to_webm(file_bytes.read())
@@ -161,6 +161,7 @@ class Handler(cog.Cog):
         elif message.animation:
             file_info = await self.bot.get_file(message.animation.file_id)
             file_bytes = await self.bot.download_file(file_info.file_path)
+            self.bot.log("recieved an animation", type="debug")
             try:
                 sticker_data = convert_to_webm(file_bytes.read(), suffix=".mp4")
                 sticker_format = "video"
@@ -174,6 +175,8 @@ class Handler(cog.Cog):
             photo = message.photo[-1]
             file_info = await self.bot.get_file(photo.file_id)
             file_bytes = await self.bot.download_file(file_info.file_path)
+            self.bot.log("recieved a photo", type="debug")
+
             sticker_format = "static"
             filename = "sticker.png"
             sticker_io = cog.io.BytesIO(file_bytes.read())
@@ -185,7 +188,20 @@ class Handler(cog.Cog):
             sticker_data = newio.getvalue()
 
         if message.caption:
+            if not cog.sh.is_emoji(message.caption):
+                await state.update_data(
+                    current_sticker=sticker_data,
+                    current_format=sticker_format,
+                    current_filename=filename,
+                )
+                await message.reply(
+                    "Please, provide only emojis in the caption. Send the emojis for this sticker now."
+                )
+                return await state.set_state(
+                    cog.states.AddStickerState.stickersAddStickerEmojis
+                )
             emojis = list(message.caption)
+            self.bot.log("reading caption", caption=emojis, type="debug")
             data = await state.get_data()
             stickers = data.get("stickers", [])
             stickers.append(
@@ -198,7 +214,7 @@ class Handler(cog.Cog):
             )
             await state.update_data(stickers=stickers)
             await message.answer(
-                f"Sticker added to the pack!\nYou can send me more stickers to add to the pack, or send /done when you are finished."
+                "Sticker added to the pack!\nYou can send me more stickers to add to the pack, or send /done when you are finished."
             )
         elif copy_emoji and message.sticker and message.sticker.emoji:
             emojis = message.sticker.emoji
@@ -241,9 +257,8 @@ class Handler(cog.Cog):
             return await state.set_state(cog.states.AddStickerState.waitingForSticker)
 
         try:
-            tg_stickerset = await self.bot.get_sticker_set(name=pack_full_name)
-        except Exception as e:
-            print(e)
+            await self.bot.get_sticker_set(name=pack_full_name)
+        except Exception:
             await message.answer(
                 "The sticker pack you are trying to add stickers to does not exist on Telegram! It might have been deleted."
             )
@@ -279,7 +294,6 @@ class Handler(cog.Cog):
                 )
             except Exception as e:
                 await message.answer(f"Error adding sticker: {e}")
-                
 
         await message.answer(
             f'Your stickers have been successfully added to the pack "<a href="https://t.me/addstickers/{pack_full_name}">{pack_name}</a>"!',
