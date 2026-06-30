@@ -279,7 +279,7 @@ class Handler(cog.Cog):
                 )
             except Exception as e:
                 await message.answer(f"Error adding sticker: {e}")
-                raise e
+                
 
         await message.answer(
             f'Your stickers have been successfully added to the pack "<a href="https://t.me/addstickers/{pack_full_name}">{pack_name}</a>"!',
